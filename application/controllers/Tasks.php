@@ -82,5 +82,12 @@ class Tasks extends CI_Controller
         }
         header('Location: showtask');
     }
+    public function logout()
+    {
+        session_start();
+        session_unset();
+        session_destroy();
+        header('location: /auth');
+    }
 
 }

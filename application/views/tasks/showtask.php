@@ -10,7 +10,7 @@ if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
         Your new task: <input name="task">
         <button type="submit">Create</button>
     </form>
-    <a href="logout.php">Logout</a> </br> <?
+    <a href="logout">Logout</a> </br> <?
 
     $sql = 'SELECT * FROM tasks WHERE user_id=' . $_SESSION['id'];
     $conn = mysqli_connect(

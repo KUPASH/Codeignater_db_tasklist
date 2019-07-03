@@ -26,7 +26,7 @@ class Auth extends CI_Controller {
             $sql = 'SELECT * FROM users WHERE login="'.$login.'"';
             $user = mysqli_fetch_assoc(mysqli_query($conn, $sql));
             if (empty($user)) {
-                $salt = 'idk6lviqLPnB4gR';
+                $salt = $this -> config -> item ('salt');
                 $saltedPassword = md5($password.$salt);
                 $sql = 'INSERT INTO `users` (`login`, `password`) VALUES ("'.$login.'","'.$saltedPassword.'")';
                 mysqli_query($conn, $sql);
@@ -49,7 +49,7 @@ class Auth extends CI_Controller {
             $user = mysqli_fetch_assoc(mysqli_query($conn, $sql));
             mysqli_close($conn);
             if (!empty($user)) {
-                $salt = 'idk6lviqLPnB4gR';
+                $salt = $this -> config -> item ('salt');
                 $saltedPassword = md5($password . $salt);
                 if ($user['password'] == $saltedPassword) {
                     session_start();
