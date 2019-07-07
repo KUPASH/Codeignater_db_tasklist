@@ -6,11 +6,10 @@ class Tasks extends CI_Controller
     {
         parent::__construct();
         $this->load->database();
+        session_start();
     }
     public function showtask()
     {
-        session_start();
-
         $sql = $this->db->select('*')->from('tasks')->where('user_id',$_SESSION['id'])->get();
         $row = $sql->result();
 
@@ -20,21 +19,18 @@ class Tasks extends CI_Controller
     }
     public function modified()
     {
-        session_start();
-
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
             $id = $this->input->get('edit');
             $sql = $this->db->select('*')->from('tasks')->where('user_id',$_SESSION['id'])->where('id',$id)->get();
             $row = $sql->result();
-        }
 
-        $this->load->view('header');
-        $this->load->view('tasks/modified', ['tasks' => $row]);
-        $this->load->view('footer');
+            $this->load->view('header');
+            $this->load->view('tasks/modified', ['tasks' => $row]);
+            $this->load->view('footer');
+        }
     }
     public function createtasks()
     {
-        session_start();
         $task = $this->input->post('task');
         $data = ['text' => $task, 'user_id' => $_SESSION['id']];
         $sql = $this->db->insert('tasks',$data);
@@ -42,8 +38,6 @@ class Tasks extends CI_Controller
     }
     public function delete()
     {
-        session_start();
-
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
             $num_string = $this->input->get('del');
             $sql = $this->db->delete('tasks',['user_id' => $_SESSION['id'], 'id' => $num_string]);
@@ -52,8 +46,6 @@ class Tasks extends CI_Controller
     }
     public function save()
     {
-        session_start();
-
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
             $newline = $this->input->get('modified');
             $id = $this->input->get('id');
@@ -64,7 +56,6 @@ class Tasks extends CI_Controller
     }
     public function logout()
     {
-        session_start();
         session_unset();
         session_destroy();
         header('location: /auth');
