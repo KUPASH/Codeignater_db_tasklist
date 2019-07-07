@@ -13,9 +13,9 @@ if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
 
     echo '<table border="1">';
     foreach ($tasks as $file) {
-    echo '<tr><td>' . $file[1] . '</td>
-        <td><a href="delete?del=' . $file[0] . '">X</a></td>
-        <td><a href="modified?edit=' . $file[0] . '">Modified</a></td></tr>';
+    echo '<tr><td>' . $file->text . '</td>
+        <td><a href="delete?del=' . $file->id . '">X</a></td>
+        <td><a href="modified?edit=' . $file->id . '">Modified</a></td></tr>';
 
     };
     echo '</table>';

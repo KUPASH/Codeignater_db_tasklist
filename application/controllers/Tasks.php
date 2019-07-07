@@ -2,22 +2,17 @@
 
 class Tasks extends CI_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->database();
+    }
     public function showtask()
     {
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        error_reporting(E_ALL);
         session_start();
 
-        $sql = 'SELECT * FROM tasks WHERE user_id=' . $_SESSION['id'];
-        $conn = mysqli_connect(
-            'localhost',
-            'root',
-            '',
-            'localhost_table'
-        );
-        $result = mysqli_query($conn, $sql);
-        $row = mysqli_fetch_all($result);
+        $sql = $this->db->select('*')->from('tasks')->where('user_id',$_SESSION['id'])->get();
+        $row = $sql->result();
 
         $this->load->view('header');
         $this->load->view('tasks/showtask', ['tasks' => $row]);
@@ -25,24 +20,12 @@ class Tasks extends CI_Controller
     }
     public function modified()
     {
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        error_reporting(E_ALL);
         session_start();
 
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
-            if (isset($_GET['edit'])) {
-                $id = $_GET['edit'];
-                $conn = mysqli_connect(
-                    'localhost',
-                    'root',
-                    '',
-                    'localhost_table'
-                );
-                $sql = 'SELECT * FROM tasks WHERE user_id="' . $_SESSION['id'] . '"AND id=' . $id;
-                $result = mysqli_query($conn, $sql);
-                $row = mysqli_fetch_all($result);
-            }
+            $id = $this->input->get('edit');
+            $sql = $this->db->select('*')->from('tasks')->where('user_id',$_SESSION['id'])->where('id',$id)->get();
+            $row = $sql->result();
         }
 
         $this->load->view('header');
@@ -51,71 +34,33 @@ class Tasks extends CI_Controller
     }
     public function createtasks()
     {
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        error_reporting(E_ALL);
         session_start();
-
-        if (isset ($_POST['task'])) {
-            $task = $_POST['task'];
-            $conn = mysqli_connect(
-                'localhost',
-                'root',
-                '',
-                'localhost_table'
-            );
-            $sql = 'INSERT INTO tasks (text, user_id) VALUES ("' . $task . '",' . $_SESSION['id'] . ')';
-            mysqli_query($conn, $sql);
-            header('location: showtask');
-        }
-
+        $task = $this->input->post('task');
+        $data = ['text' => $task, 'user_id' => $_SESSION['id']];
+        $sql = $this->db->insert('tasks',$data);
+        header('location: /tasks/showtask');
     }
     public function delete()
     {
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        error_reporting(E_ALL);
         session_start();
 
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
-            if (isset($_GET['del'])) {
-                $num_string = $_GET['del'];
-                $conn = mysqli_connect(
-                    'localhost',
-                    'root',
-                    '',
-                    'localhost_table'
-                );
-                $sql = 'DELETE FROM tasks WHERE user_id="' . $_SESSION['id'] . '"AND id=' . $num_string;
-                mysqli_query($conn, $sql);
-            }
+            $num_string = $this->input->get('del');
+            $sql = $this->db->delete('tasks',['user_id' => $_SESSION['id'], 'id' => $num_string]);
         }
-        header('Location: showtask');
+        header('Location: /tasks/showtask');
     }
     public function save()
     {
-
-        ini_set('display_errors', true);
-        ini_set('display_startup_errors', true);
-        error_reporting(E_ALL);
         session_start();
 
         if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
-            if (isset($_GET['modified']) & isset($_GET['id'])) {
-                $newline = $_GET['modified'];
-                $id = $_GET['id'];
-                $conn = mysqli_connect(
-                    'localhost',
-                    'root',
-                    '',
-                    'localhost_table'
-                );
-                $sql = 'UPDATE tasks SET text="' . $newline . '" WHERE user_id="' . $_SESSION['id'] . '"AND id=' . $id;
-                mysqli_query($conn, $sql);
-                mysqli_close($conn);
-            }
+            $newline = $this->input->get('modified');
+            $id = $this->input->get('id');
+            $data = ['id' => $id, 'user_id' => $_SESSION['id'], 'text' => $newline];
+            $sql = $this->db->replace('tasks', $data);
         }
-        header('Location: showtask');
+        header('Location: /tasks/showtask');
     }
     public function logout()
     {
@@ -124,5 +69,4 @@ class Tasks extends CI_Controller
         session_destroy();
         header('location: /auth');
     }
-
 }
