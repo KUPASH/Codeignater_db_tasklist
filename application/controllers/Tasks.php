@@ -10,12 +10,14 @@ class Tasks extends CI_Controller
     }
     public function showtask()
     {
-        $sql = $this->db->select('*')->from('tasks')->where('user_id',$_SESSION['id'])->get();
-        $row = $sql->result();
+        if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
+            $sql = $this->db->select('*')->from('tasks')->where('user_id', $_SESSION['id'])->get();
+            $row = $sql->result();
 
-        $this->load->view('header');
-        $this->load->view('tasks/showtask', ['tasks' => $row]);
-        $this->load->view('footer');
+            $this->load->view('header');
+            $this->load->view('tasks/showtask', ['tasks' => $row]);
+            $this->load->view('footer');
+        }
     }
     public function modified()
     {
@@ -31,10 +33,12 @@ class Tasks extends CI_Controller
     }
     public function createtasks()
     {
-        $task = $this->input->post('task');
-        $data = ['text' => $task, 'user_id' => $_SESSION['id']];
-        $sql = $this->db->insert('tasks',$data);
-        header('location: /tasks/showtask');
+        if(isset($_SESSION['id']) && isset($_SESSION['login'])) {
+            $task = $this->input->post('task');
+            $data = ['text' => $task, 'user_id' => $_SESSION['id']];
+            $sql = $this->db->insert('tasks', $data);
+            header('location: /tasks/showtask');
+        }
     }
     public function delete()
     {
