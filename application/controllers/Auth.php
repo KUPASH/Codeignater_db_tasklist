@@ -5,6 +5,7 @@ class Auth extends CI_Controller {
     {
         parent::__construct();
         $this->load->database();
+        $this->load->model('users_model');
     }
 
     public function index()
@@ -19,13 +20,11 @@ class Auth extends CI_Controller {
         $login = $this->input->post('login');
         $password = $this->input->post('pass');
         if(!empty($login) && !empty($password)) {
-            $sql = $this->db->select('*')->from('users')->where('login', $login)->get();
-            $user = $sql->result();
+            $user = $this->users_model->getUserByLogin($login);
             if (empty($user)) {
                 $salt = $this->config->item('salt');
                 $saltedPassword = md5($password . $salt);
-                $data = ['login' => $login, 'password' => $saltedPassword];
-                $sql = $this->db->insert('users', $data);
+                $sql = $this->users_model->insertNewUser($login, $saltedPassword);
             } else {
                 $error['nameErr'] = 'Login is already taken';
 
@@ -43,8 +42,7 @@ class Auth extends CI_Controller {
 
         $login = $this->input->post('login');
         $password = $this->input->post('pass');
-        $sql = $this->db->select('*')->from('users')->where('login',$login)->get();
-        $user = $sql->row_array();
+        $user = $this->users_model->getUserByLogin2($login);
         if (!empty($user)) {
             $salt = $this -> config -> item ('salt');
             $saltedPassword = md5($password . $salt);
@@ -62,8 +60,7 @@ class Auth extends CI_Controller {
         $login = $this->input->post('login');
         $password = $this->input->post('pass');
         if(!empty($login) && !empty($password)) {
-            $sql = $this->db->select('*')->from('users')->where('login', $login)->get();
-            $user = $sql->row_array();
+            $user = $this->users_model->getUserByLogin2($login);
             if (!empty($user)) {
                 $salt = $this->config->item('salt');
                 $saltedPassword = md5($password . $salt);
@@ -93,5 +90,12 @@ class Auth extends CI_Controller {
             $this->load->view('/auth/firstpage', $error);
             $this->load->view('footer');
         }
+    }
+    public function logout()
+    {
+        session_start();
+        session_unset();
+        session_destroy();
+        header('location: /auth');
     }
 }

@@ -5,7 +5,7 @@ echo 'Hello, ' . $_SESSION['login'] . '!';?>
     Your new task: <input name="task">
     <button type="submit">Create</button>
 </form>
-<a href="logout">Logout</a> </br> <?
+<a href="/auth/logout">Logout</a> </br> <?
 
 echo '<table border="1">';
 foreach ($tasks as $file) {
